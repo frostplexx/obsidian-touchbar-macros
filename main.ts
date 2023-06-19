@@ -1,13 +1,15 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import {App, Modal, Plugin, PluginSettingTab, setIcon, Setting} from 'obsidian';
+import {ObsidianTouchBarItem} from "./touchbar";
+import {executeMakro} from "./makro";
 
 // Remember to rename these classes and interfaces!
 
 interface MyPluginSettings {
-	mySetting: string;
+	touchbarItems: ObsidianTouchBarItem[]
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
+	touchbarItems: [],
 }
 
 export default class MyPlugin extends Plugin {
@@ -16,66 +18,32 @@ export default class MyPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		// This creates an icon in the left ribbon.
-		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
-			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
-		});
-		// Perform additional things with the ribbon
-		ribbonIconEl.addClass('my-plugin-ribbon-class');
-
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status Bar Text');
-
-		// This adds a simple command that can be triggered anywhere
-		this.addCommand({
-			id: 'open-sample-modal-simple',
-			name: 'Open sample modal (simple)',
-			callback: () => {
-				new SampleModal(this.app).open();
-			}
-		});
-		// This adds an editor command that can perform some operation on the current editor instance
-		this.addCommand({
-			id: 'sample-editor-command',
-			name: 'Sample editor command',
-			editorCallback: (editor: Editor, view: MarkdownView) => {
-				console.log(editor.getSelection());
-				editor.replaceSelection('Sample Editor Command');
-			}
-		});
-		// This adds a complex command that can check whether the current state of the app allows execution of the command
-		this.addCommand({
-			id: 'open-sample-modal-complex',
-			name: 'Open sample modal (complex)',
-			checkCallback: (checking: boolean) => {
-				// Conditions to check
-				const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
-				if (markdownView) {
-					// If checking is true, we're simply "checking" if the command can be run.
-					// If checking is false, then we want to actually perform the operation.
-					if (!checking) {
-						new SampleModal(this.app).open();
-					}
-
-					// This command will only show up in Command Palette when the check function returns true
-					return true;
-				}
-			}
-		});
+		this.updateTouchBar();
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SampleSettingTab(this.app, this));
+	}
 
-		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
-		// Using this function will automatically remove the event listener when this plugin is disabled.
-		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			console.log('click', evt);
+	updateTouchBar() {
+		const {BrowserWindow, TouchBar} = require('electron').remote
+
+		const items = this.settings.touchbarItems.map((item) => {
+			return new TouchBar.TouchBarButton({
+				label: item["label"],
+				backgroundColor: item["backgroundColor"],
+				click: () => {
+					executeMakro(this.app, item["makro"])
+				}
+			})
 		});
+		const touchbar = new TouchBar({
+			items: items
+		})
 
-		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+		//get the main window
+		const win = BrowserWindow.getFocusedWindow()
+		//set the touchbar
+		win.setTouchBar(touchbar)
 	}
 
 	onunload() {
@@ -120,18 +88,113 @@ class SampleSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		containerEl.createEl('h2', {text: 'Settings for my awesome plugin.'});
+		containerEl.createEl('h2', {text: 'Add Touchbar Items'});
+		containerEl.createEl("p", {text: "To add an item to your touchbar, first create a makro, then a new item and assign the makro to it."})
+
+		const modifyOrAddArray = (item: ObsidianTouchBarItem) => {
+			//check for an item with the same id
+			const index = this.plugin.settings.touchbarItems.findIndex((element) => element.id === item.id)
+			if(index === -1){
+				//add the item to the array
+				this.plugin.settings.touchbarItems.push(item)
+			} else {
+				//replace the item in the array
+				this.plugin.settings.touchbarItems[index] = item
+			}
+			this.plugin.updateTouchBar()
+			this.plugin.saveSettings()
+		}
+		const renderTouchbarItem = (item: ObsidianTouchBarItem) => {
+			const itemEl = containerEl.createDiv('touchbar-item');
+			itemEl.style.display = 'flex';
+			itemEl.style.flexDirection = 'row';
+			itemEl.style.alignItems = 'start';
+			itemEl.style.marginBottom = '10px';
+			const labelIn = itemEl.createEl("input", {
+				type: "text",
+				value: item['label']
+			})
+			labelIn.style.marginRight = '10px'
+			labelIn.placeholder = 'Label'
+
+			const colorIn = itemEl.createEl("input", {
+				type: "color",
+				value: item['backgroundColor'],
+			});
+			colorIn.style.marginRight = '10px'
+			colorIn.placeholder = 'Background Color'
+
+			const makroIn = itemEl.createEl("input", {
+				type: "text",
+				value: item['makro'],
+			});
+			makroIn.style.marginRight = '10px'
+			makroIn.placeholder = 'Makro'
+
+			const removeButton = itemEl.createEl('button');
+			removeButton.style.backgroundColor = "inherit";
+			removeButton.style.border = 'none'
+			removeButton.style.outline = 'none'
+			removeButton.style.boxShadow = 'none'
+			removeButton.style.padding = '0'
+			removeButton.style.margin = '0'
+			removeButton.style.cursor = 'pointer'
+			removeButton.style.marginLeft = 'auto'
+			setIcon(removeButton, 'x')
+
+			removeButton.onclick = () => {
+				//remove the item
+				this.plugin.settings.touchbarItems = this.plugin.settings.touchbarItems.filter((i) => i !== item);
+				this.plugin.saveSettings();
+				this.plugin.updateTouchBar()
+				itemEl.remove();
+			}
+
+			labelIn.onchange = () => {
+				item["label"] = labelIn.value
+				modifyOrAddArray(item)
+			}
+
+			colorIn.onchange = () => {
+				item["backgroundColor"] = colorIn.value
+				modifyOrAddArray(item)
+			}
+
+			makroIn.onchange = () => {
+				item["makro"] = makroIn.value
+				modifyOrAddArray(item)
+			}
+		}
 
 		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
-			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
-				.onChange(async (value) => {
-					console.log('Secret: ' + value);
-					this.plugin.settings.mySetting = value;
-					await this.plugin.saveSettings();
-				}));
+			.setName('Add Touchbar Item')
+			.setDesc('Add a new touchbar item')
+			.addButton(cb => {
+				cb.setButtonText('Add')
+					.onClick(async () => {
+						renderTouchbarItem(new ObsidianTouchBarItem('', '#FFFFFF', ""))
+					})
+			})
+
+		containerEl.createEl('h2', {text: 'Current Touchbar Items'});
+		const touchbarItems = this.plugin.settings.touchbarItems;
+		//list all the loaded items
+		console.log(touchbarItems)
+		for (let i = 0; i < touchbarItems.length; i++) {
+			renderTouchbarItem(touchbarItems[i]);
+		}
+
+
+		//add divider
+		containerEl.createEl('hr');
+		//Makro section
+
+		containerEl.createEl("h2", {text: "Makros"})
+		const description = containerEl.createEl("p", {text: "Use makros to give your touchbar items functionality."})
+		description.style.fontSize = "0.9rem"
+		description.style.opacity = "0.7"
+
 	}
 }
+
+
