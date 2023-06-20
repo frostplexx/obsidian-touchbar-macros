@@ -1,5 +1,5 @@
 {
-	"makros": [
+	"macros": [
 		{
 			"syntax": "[KEYCODE]",
 			"description": "This is how you press a key, where `KEYCODE` is the name of the key you want pressed",
@@ -12,7 +12,7 @@
 		},
 		{
 			"syntax": ",DELAY,",
-			"description": " is used to add a delay between key presses where `DELAY` is the amount in ms. NOTE: This doesn't work correctly yet",
+			"description": " is used to add a delay between key presses where `DELAY` is the amount in ms.",
 			"example": "[Cmd]+[P],100,[Enter]"
 		},
 		{
@@ -22,18 +22,18 @@
 		},
 		{
 			"syntax": "#COMMENT#",
-			"description": " is used to add a comment where `COMMENT` is the comment you want to add. NOTE: NOT IMPLEMENTED YET",
+			"description": "# is used to add a comment where `COMMENT` is the comment you want to add.",
 			"example": "#This is a comment#"
 		},
 		{
 			"syntax": "\\CHAR",
-			"description": " is used to escape a character where `CHAR` is the character you want to escape. NOTE: NOT IMPLEMENTED YET",
+			"description": " is used to escape a character where `CHAR` is the character you want to escape.",
 			"example": "\\["
 		},
 		{
-			"syntax": "(){REPEAT}",
-			"description": " is used to repeat a sequence of keys where `REPEAT` is the sequence you want to repeat. NOTE: NOT IMPLEMENTED YET",
-			"example": "([Cmd]+[P] [Cmd]+[A] [Cmd]+[C] [Cmd]+[V] [Enter]){10}"
+			"syntax": "{REPEAT}()",
+			"description": " is used to repeat a sequence of keys where `REPEAT` is the sequence you want to repeat.",
+			"example": "{10}([Cmd]+[P] [Cmd]+[A] [Cmd]+[C] [Cmd]+[V] [Enter])"
 		}
 	]
 }

@@ -1,4 +1,4 @@
-import {App, Modal, Plugin, PluginSettingTab, setIcon, Setting} from 'obsidian';
+import {App, Plugin, PluginSettingTab, setIcon, Setting} from 'obsidian';
 import {ObsidianTouchBarItem} from "./touchbar";
 import {executeMakro} from "./makro";
 
@@ -59,22 +59,6 @@ export default class MyPlugin extends Plugin {
 	}
 }
 
-class SampleModal extends Modal {
-	constructor(app: App) {
-		super(app);
-	}
-
-	onOpen() {
-		const {contentEl} = this;
-		contentEl.setText('Woah!');
-	}
-
-	onClose() {
-		const {contentEl} = this;
-		contentEl.empty();
-	}
-}
-
 class SampleSettingTab extends PluginSettingTab {
 	plugin: MyPlugin;
 
@@ -91,10 +75,10 @@ class SampleSettingTab extends PluginSettingTab {
 		containerEl.createEl('h2', {text: 'Add Touchbar Items'});
 		containerEl.createEl("p", {text: "To add an item to your touchbar, first create a makro, then a new item and assign the makro to it."})
 
-		const modifyOrAddArray = (item: ObsidianTouchBarItem) => {
+		const modifyOrAddArray = async (item: ObsidianTouchBarItem) => {
 			//check for an item with the same id
 			const index = this.plugin.settings.touchbarItems.findIndex((element) => element.id === item.id)
-			if(index === -1){
+			if (index === -1) {
 				//add the item to the array
 				this.plugin.settings.touchbarItems.push(item)
 			} else {
@@ -102,7 +86,7 @@ class SampleSettingTab extends PluginSettingTab {
 				this.plugin.settings.touchbarItems[index] = item
 			}
 			this.plugin.updateTouchBar()
-			this.plugin.saveSettings()
+			await this.plugin.saveSettings()
 		}
 		const renderTouchbarItem = (item: ObsidianTouchBarItem) => {
 			const itemEl = itemContainer.createDiv('touchbar-item');
@@ -129,7 +113,7 @@ class SampleSettingTab extends PluginSettingTab {
 				value: item['makro'],
 			});
 			makroIn.style.marginRight = '10px'
-			makroIn.placeholder = 'Makro'
+			makroIn.placeholder = 'Macro'
 			makroIn.style.width = '100%'
 
 			const removeButton = itemEl.createEl('button');
@@ -143,27 +127,27 @@ class SampleSettingTab extends PluginSettingTab {
 			removeButton.style.marginLeft = 'auto'
 			setIcon(removeButton, 'x')
 
-			removeButton.onclick = () => {
+			removeButton.onclick = async () => {
 				//remove the item
 				this.plugin.settings.touchbarItems = this.plugin.settings.touchbarItems.filter((i) => i !== item);
-				this.plugin.saveSettings();
+				await this.plugin.saveSettings();
 				this.plugin.updateTouchBar()
 				itemEl.remove();
 			}
 
-			labelIn.onchange = () => {
+			labelIn.onchange = async () => {
 				item["label"] = labelIn.value
-				modifyOrAddArray(item)
+				await modifyOrAddArray(item)
 			}
 
-			colorIn.onchange = () => {
+			colorIn.onchange = async () => {
 				item["backgroundColor"] = colorIn.value
-				modifyOrAddArray(item)
+				await modifyOrAddArray(item)
 			}
 
-			makroIn.onchange = () => {
+			makroIn.onchange = async () => {
 				item["makro"] = makroIn.value
-				modifyOrAddArray(item)
+				await modifyOrAddArray(item)
 			}
 		}
 
@@ -190,43 +174,55 @@ class SampleSettingTab extends PluginSettingTab {
 
 		//add divider
 		containerEl.createEl('hr');
-		containerEl.style.overflow = "hidden"
+		// containerEl.style.overflow = "hidden"
 		//Makro section
 
-		containerEl.createEl("h2", {text: "Makros"})
-		const description = containerEl.createEl("p", {text: "Use makros to give your touchbar items functionality."})
+		containerEl.createEl("h2", {text: "Macros"})
+		const description = containerEl.createEl("p", {text: "Use macros to give your touchbar items functionality."})
 		description.style.fontSize = "0.9rem"
 		description.style.opacity = "0.7"
 
-		const makroTable = containerEl.createEl("table")
-		makroTable.style.width = "100%"
-		makroTable.style.marginBottom = "10px"
-		makroTable.style.fontSize = "0.9rem"
-		makroTable.style.textAlign = "center"
-		const makroTableHead = makroTable.createEl("thead")
-		const makroTableHeadRow = makroTableHead.createEl("tr")
-		const makroTableHeadRowName = makroTableHeadRow.createEl("th")
-		const makroTableHeadRowName2 = makroTableHeadRow.createEl("th")
-		const makroTableHeadRowName3 = makroTableHeadRow.createEl("th")
-		makroTableHeadRowName.setText("Syntax")
-		makroTableHeadRowName2.setText("Description")
-		makroTableHeadRowName3.setText("Example")
+		const macroTable = containerEl.createEl("table")
+		macroTable.style.width = "100%"
+		macroTable.style.marginBottom = "10px"
+		macroTable.style.fontSize = "0.9rem"
+		//add border
+		macroTable.style.border = "2px solid var(--background-secondary)"
+		macroTable.style.borderRadius = "5px"
+		macroTable.style.padding = "10px"
+		macroTable.style.borderCollapse = "collapse"
+		const macroTableHead = macroTable.createEl("thead")
+		const macroTableHeadRow = macroTableHead.createEl("tr")
+		const macroTableHeadRowName = macroTableHeadRow.createEl("th")
+		const macroTableHeadRowName2 = macroTableHeadRow.createEl("th")
+		const macroTableHeadRowName3 = macroTableHeadRow.createEl("th")
+		macroTableHeadRowName.setText("Syntax")
+		macroTableHeadRowName2.setText("Description")
+		macroTableHeadRowName3.setText("Example")
+		const macroTableBody = macroTable.createEl("tbody")
 
 
 		//load the syntax names and descriptions from macro_desc.json
-		const { makros } = require('./makro_desc.json')
+		const { macros } = require('./macro_desc.json')
 
 		//loop through the makro descriptions and add them to the table
-		for (let i = 0; i < makros.length; i++) {
-			const row = makroTable.createEl("tr")
+		for (let i = 0; i < macros.length; i++) {
+			const row = macroTableBody.createEl("tr")
 			const name = row.createEl("td")
 			const desc = row.createEl("td")
 			const example = row.createEl("td")
-			name.setText(makros[i]["syntax"])
-			desc.setText(makros[i]["description"])
-			example.setText(makros[i]["example"])
-		}
+			name.setText(macros[i]["syntax"])
+			desc.setText(macros[i]["description"])
+			example.setText(macros[i]["example"])
 
+			Array.from(row.children).map((child) => {
+				(child as any).style.border = "2px solid var(--background-secondary)"
+			})
+			Array.from(row.children).map((child) => {
+				(child as any).style.padding = "10px"
+			});
+
+		}
 
 	}
 
