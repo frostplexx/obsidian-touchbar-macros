@@ -1,0 +1,39 @@
+{
+	"makros": [
+		{
+			"syntax": "[KEYCODE]",
+			"description": "This is how you press a key, where `KEYCODE` is the name of the key you want pressed",
+			"example": "[Enter] [Backspace]"
+		},
+		{
+			"syntax": "[KEYCODE]+[KEYCODE]",
+			"description": "+ is used to add a modifier eg: [Cmd]+[P] for pressing Command-P",
+			"example": "[Cmd]+[P] [Cmd]+[A]"
+		},
+		{
+			"syntax": ",DELAY,",
+			"description": " is used to add a delay between key presses where `DELAY` is the amount in ms. NOTE: This doesn't work correctly yet",
+			"example": "[Cmd]+[P],100,[Enter]"
+		},
+		{
+			"syntax": "\"TEXT\"",
+			"description": " is used to type text where `TEXT` is the text you want typed",
+			"example": "\"Hello World\""
+		},
+		{
+			"syntax": "#COMMENT#",
+			"description": " is used to add a comment where `COMMENT` is the comment you want to add. NOTE: NOT IMPLEMENTED YET",
+			"example": "#This is a comment#"
+		},
+		{
+			"syntax": "\\CHAR",
+			"description": " is used to escape a character where `CHAR` is the character you want to escape. NOTE: NOT IMPLEMENTED YET",
+			"example": "\\["
+		},
+		{
+			"syntax": "(){REPEAT}",
+			"description": " is used to repeat a sequence of keys where `REPEAT` is the sequence you want to repeat. NOTE: NOT IMPLEMENTED YET",
+			"example": "([Cmd]+[P] [Cmd]+[A] [Cmd]+[C] [Cmd]+[V] [Enter]){10}"
+		}
+	]
+}

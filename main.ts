@@ -105,7 +105,7 @@ class SampleSettingTab extends PluginSettingTab {
 			this.plugin.saveSettings()
 		}
 		const renderTouchbarItem = (item: ObsidianTouchBarItem) => {
-			const itemEl = containerEl.createDiv('touchbar-item');
+			const itemEl = itemContainer.createDiv('touchbar-item');
 			itemEl.style.display = 'flex';
 			itemEl.style.flexDirection = 'row';
 			itemEl.style.alignItems = 'start';
@@ -130,6 +130,7 @@ class SampleSettingTab extends PluginSettingTab {
 			});
 			makroIn.style.marginRight = '10px'
 			makroIn.placeholder = 'Makro'
+			makroIn.style.width = '100%'
 
 			const removeButton = itemEl.createEl('button');
 			removeButton.style.backgroundColor = "inherit";
@@ -176,7 +177,9 @@ class SampleSettingTab extends PluginSettingTab {
 					})
 			})
 
-		containerEl.createEl('h2', {text: 'Current Touchbar Items'});
+		const itemContainer = containerEl.createEl('div');
+		itemContainer.createEl('h2', {text: 'Current Touchbar Items'});
+
 		const touchbarItems = this.plugin.settings.touchbarItems;
 		//list all the loaded items
 		console.log(touchbarItems)
@@ -187,6 +190,7 @@ class SampleSettingTab extends PluginSettingTab {
 
 		//add divider
 		containerEl.createEl('hr');
+		containerEl.style.overflow = "hidden"
 		//Makro section
 
 		containerEl.createEl("h2", {text: "Makros"})
@@ -194,7 +198,38 @@ class SampleSettingTab extends PluginSettingTab {
 		description.style.fontSize = "0.9rem"
 		description.style.opacity = "0.7"
 
+		const makroTable = containerEl.createEl("table")
+		makroTable.style.width = "100%"
+		makroTable.style.marginBottom = "10px"
+		makroTable.style.fontSize = "0.9rem"
+		makroTable.style.textAlign = "center"
+		const makroTableHead = makroTable.createEl("thead")
+		const makroTableHeadRow = makroTableHead.createEl("tr")
+		const makroTableHeadRowName = makroTableHeadRow.createEl("th")
+		const makroTableHeadRowName2 = makroTableHeadRow.createEl("th")
+		const makroTableHeadRowName3 = makroTableHeadRow.createEl("th")
+		makroTableHeadRowName.setText("Syntax")
+		makroTableHeadRowName2.setText("Description")
+		makroTableHeadRowName3.setText("Example")
+
+
+		//load the syntax names and descriptions from macro_desc.json
+		const { makros } = require('./makro_desc.json')
+
+		//loop through the makro descriptions and add them to the table
+		for (let i = 0; i < makros.length; i++) {
+			const row = makroTable.createEl("tr")
+			const name = row.createEl("td")
+			const desc = row.createEl("td")
+			const example = row.createEl("td")
+			name.setText(makros[i]["syntax"])
+			desc.setText(makros[i]["description"])
+			example.setText(makros[i]["example"])
+		}
+
+
 	}
+
 }
 
 

@@ -6,7 +6,7 @@ const electron = require('electron').remote
 * | Syntax    | Description                                                                                    |
 * |-----------|------------------------------------------------------------------------------------------------|
 * | [KEYCODE] | This is how you press a key, where `KEYCODE` is the name of the key you want pressed           |
-* | +         | + is used to combine multiple keys                                                             |
+* | +         | + is used to add a modifier eg: [Cmd]+[P] for pressing Command-P                                                           |
 * | ,DELAY,   | , is used to add a delay between key presses where `DELAY` is the amount in ms                 |
 * | "TEXT"    | " is used to add text where `TEXT` is the text you want to add. The plugin will type this text |
 * | #COMMENT#         | # is used to add a comment where `COMMENT` is the comment you want to add  (NOT IMPLEMENTED)   |
@@ -22,6 +22,7 @@ export function executeMakro(app: App, makro: string) {
 }
 
 function executeCommands(app: App, commands: MakroCommand[]) {
+	console.log(commands)
 	commands.forEach((command) => {
 		//check if the current command is a keycode command and the next is a presskeys command
 		if (command.command === MakroCommandType.PressKey && commands[commands.indexOf(command) + 1]?.command === MakroCommandType.PressKeys && commands[commands.indexOf(command) + 2]?.command === MakroCommandType.PressKey) {
@@ -36,33 +37,43 @@ function executeCommands(app: App, commands: MakroCommand[]) {
 				case MakroCommandType.AddText:
 					addText(app, command.argument)
 					break
+				case MakroCommandType.Delay:
+					waitFor(command.argument)
+
 			}
 		}
 	})
+}
+
+function waitFor(argument: string) {
+	//sleep for the amount of time in the argument
+	const ms = parseInt(argument)
+	const start = new Date().getTime();
+	let end = start;
+	while (end < start + ms) {
+		end = new Date().getTime();
+	}
 }
 
 
 function addText(app: App, text: string) {
 	//add the text
 	console.log(text)
+	//split tthe text into sets of 3 characters
+	const characters = text.split("")
 	const win = electron.BrowserWindow.getFocusedWindow()
-	win.webContents.sendInputEvent({keyCode: text, type: "char"})
+	characters.forEach((char) => {
+		win.webContents.sendInputEvent({keyCode: char, type: "char"})
+	})
 }
 
 function pressKeys(app: App, key1: string, key2: string) {
 	//press the keys
 	const win = electron.BrowserWindow.getFocusedWindow()
-	win.webContents.sendInputEvent({keyCode: key1, type: "keyDown"})
 	//sleep for 10ms
-	setTimeout(() => {
 
-	} , 10)
-	win.webContents.sendInputEvent({keyCode: key2, type: "keyDown"})
-	win.webContents.sendInputEvent({keyCode: key1, type: "keyUp"})
-	//sleep for 10ms
-	setTimeout(() => {
+	win.webContents.sendInputEvent({keyCode: key2, type: "keyDown", modifiers: [key1]})
 
-	} , 10)
 	win.webContents.sendInputEvent({keyCode: key2, type: "keyUp"})
 }
 
@@ -134,12 +145,14 @@ function parseMakro(makro: string) {
 			case "\\":
 				break
 			case ",":
-				commandStarted = false
+				commandStarted = !commandStarted
 				currentCommand += command
-				parsedCommands.push({
-					command: MakroCommandType.Delay,
-					argument: currentArgument
-				});
+				if (!commandStarted) {
+					parsedCommands.push({
+						command: MakroCommandType.Delay,
+						argument: currentArgument
+					});
+				}
 				currentArgument = ""
 				break
 			default:
