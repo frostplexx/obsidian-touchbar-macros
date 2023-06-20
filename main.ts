@@ -73,7 +73,7 @@ class SampleSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		containerEl.createEl('h2', {text: 'Add Touchbar Items'});
-		containerEl.createEl("p", {text: "To add an item to your touchbar, first create a makro, then a new item and assign the makro to it."})
+		containerEl.createEl("p", {text: "To add an item to your touchbar, click the button below. You can then edit the item in the list below."})
 
 		const modifyOrAddArray = async (item: ObsidianTouchBarItem) => {
 			//check for an item with the same id
@@ -92,8 +92,85 @@ class SampleSettingTab extends PluginSettingTab {
 			const itemEl = itemContainer.createDiv('touchbar-item');
 			itemEl.style.display = 'flex';
 			itemEl.style.flexDirection = 'row';
-			itemEl.style.alignItems = 'start';
+			itemEl.style.alignItems = 'center';
 			itemEl.style.marginBottom = '10px';
+			itemEl.style.justifyContent = 'space-between';
+
+			//create the move buttons
+			const moveButtons = itemEl.createDiv();
+			moveButtons.style.display = 'flex';
+			moveButtons.style.flexDirection = 'column';
+			moveButtons.style.alignItems = 'center';
+			moveButtons.style.marginRight = '10px';
+
+			const moveUp = moveButtons.createEl('button');
+			moveUp.style.backgroundColor = "inherit";
+			moveUp.style.border = 'none'
+			moveUp.style.outline = 'none'
+			moveUp.style.boxShadow = 'none'
+			moveUp.style.padding = '0'
+			moveUp.style.margin = '0'
+			moveUp.style.cursor = 'pointer'
+			moveUp.style.marginLeft = 'auto'
+			moveUp.style.cursor = 'pointer'
+			moveUp.style.height = "20px"
+			moveUp.style.opacity = "0.5"
+			setIcon(moveUp, 'chevron-up')
+
+			const moveDown = moveButtons.createEl('button');
+			moveDown.style.backgroundColor = "inherit";
+			moveDown.style.border = 'none'
+			moveDown.style.outline = 'none'
+			moveDown.style.boxShadow = 'none'
+			moveDown.style.padding = '0'
+			moveDown.style.margin = '0'
+			moveDown.style.cursor = 'pointer'
+			moveDown.style.marginLeft = 'auto'
+			moveDown.style.height = "20px"
+			moveDown.style.opacity = "0.5"
+			setIcon(moveDown, 'chevron-down')
+
+			moveUp.addEventListener("mouseover", () => {
+				moveUp.style.opacity = "1"
+			})
+
+			moveUp.addEventListener("mouseout", () => {
+				moveUp.style.opacity = "0.5"
+			})
+
+			moveDown.addEventListener("mouseover", () => {
+				moveDown.style.opacity = "1"
+			})
+
+			moveDown.addEventListener("mouseout", () => {
+				moveDown.style.opacity = "0.5"
+			})
+
+			moveUp.addEventListener('click', async () => {
+				//move the item up in the array
+				const index = this.plugin.settings.touchbarItems.findIndex((element) => element.id === item.id)
+				if (index > 0) {
+					this.plugin.settings.touchbarItems.splice(index - 1, 0, this.plugin.settings.touchbarItems.splice(index, 1)[0])
+					this.plugin.updateTouchBar()
+					await this.plugin.saveSettings()
+					//move the item visually up
+					itemEl.previousSibling?.before(itemEl)
+				}
+			})
+			moveDown.addEventListener('click', async () => {
+				//move the item down in the array
+				const index = this.plugin.settings.touchbarItems.findIndex((element) => element.id === item.id)
+				if (index < this.plugin.settings.touchbarItems.length - 1) {
+					this.plugin.settings.touchbarItems.splice(index + 1, 0, this.plugin.settings.touchbarItems.splice(index, 1)[0])
+					this.plugin.updateTouchBar()
+					await this.plugin.saveSettings()
+					//move the item visually down
+					itemEl.nextSibling?.after(itemEl)
+				}
+
+			})
+
+			//create the input fields
 			const labelIn = itemEl.createEl("input", {
 				type: "text",
 				value: item['label']
@@ -125,7 +202,18 @@ class SampleSettingTab extends PluginSettingTab {
 			removeButton.style.margin = '0'
 			removeButton.style.cursor = 'pointer'
 			removeButton.style.marginLeft = 'auto'
+			removeButton.style.opacity = "0.5"
 			setIcon(removeButton, 'x')
+
+			removeButton.addEventListener("mouseover", () => {
+				removeButton.style.opacity = "1"
+				removeButton.style.color = "red"
+			});
+
+			removeButton.addEventListener("mouseout", () => {
+				removeButton.style.opacity = "0.5"
+				removeButton.style.color = "inherit"
+			});
 
 			removeButton.onclick = async () => {
 				//remove the item
@@ -159,6 +247,9 @@ class SampleSettingTab extends PluginSettingTab {
 					.onClick(async () => {
 						renderTouchbarItem(new ObsidianTouchBarItem('', '#FFFFFF', ""))
 					})
+					.setTooltip('Add a new touchbar item')
+					.setIcon('plus')
+					.setCta()
 			})
 
 		const itemContainer = containerEl.createEl('div');

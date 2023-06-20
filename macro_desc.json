@@ -12,12 +12,12 @@
 		},
 		{
 			"syntax": ",DELAY,",
-			"description": " is used to add a delay between key presses where `DELAY` is the amount in ms.",
+			"description": ", is used to add a delay between key presses where `DELAY` is the amount in ms.",
 			"example": "[Cmd]+[P],100,[Enter]"
 		},
 		{
 			"syntax": "\"TEXT\"",
-			"description": " is used to type text where `TEXT` is the text you want typed",
+			"description": "\" is used to type text where `TEXT` is the text you want typed",
 			"example": "\"Hello World\""
 		},
 		{
@@ -27,12 +27,12 @@
 		},
 		{
 			"syntax": "\\CHAR",
-			"description": " is used to escape a character where `CHAR` is the character you want to escape.",
+			"description": "\\ is used to escape a character where `CHAR` is the character you want to escape.",
 			"example": "\\["
 		},
 		{
 			"syntax": "{REPEAT}()",
-			"description": " is used to repeat a sequence of keys where `REPEAT` is the sequence you want to repeat.",
+			"description": "{}() is used to repeat a sequence of keys where `REPEAT` is the sequence you want to repeat.",
 			"example": "{10}([Cmd]+[P] [Cmd]+[A] [Cmd]+[C] [Cmd]+[V] [Enter])"
 		}
 	]

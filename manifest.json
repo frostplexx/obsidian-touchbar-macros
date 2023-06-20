@@ -1,6 +1,6 @@
 {
 	"id": "obsidian-mac-touchbar",
-	"name": "Mac Touchbar Support",
+	"name": "Mac Touchbar",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
 	"description": "Adds support for running macros from the Mac Touchbar.",
