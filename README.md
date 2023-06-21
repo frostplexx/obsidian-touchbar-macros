@@ -1,5 +1,4 @@
-# Obsidian Mac Touchbar
-
+# Obsidian Touch Bar Macros
 This is a plugin for [Obsidian](https://obsidian.md/) that adds a touchbar to the Mac app.
 
 ## Features
