@@ -1,13 +1,12 @@
-# Obsidian Mac Touchbar
-
-This is a plugin for [Obsidian](https://obsidian.md/) that adds a touchbar to the Mac app.
+# Obsidian Touch Bar Macros
+This is a plugin for [Obsidian](https://obsidian.md/) that adds Touch Bar support.
 
 ## Features
 
-- Add custom items to your touchbar
+- Add custom items to your Touch Bar
 - Do anything faster with macros
 - Perform your favorite actions with a single touch
-- Customize the color of your touchbar items
+- Customize the color of your Touch Bar items
 
 ## Screenshots
 
@@ -46,9 +45,9 @@ From Obsidian v0.9.8, you can activate this plugin within Obsidian by doing the 
 ## Usage
 
 1. Open the settings for the plugin
-2. Add a new touchbar item
+2. Add a new Touch Bar item
 3. Add a name (can be any ascii character), a color and a macro
-4. Close the settings page and enjoy your new touchbar item
+4. Close the settings page and enjoy your new Touch Bar item
 
 ### Macro Language
 
