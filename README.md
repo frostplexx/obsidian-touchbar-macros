@@ -11,11 +11,11 @@ This is a plugin for [Obsidian](https://obsidian.md/) that adds a touchbar to th
 
 ## Screenshots
 
-<img src="https://github.com/Frostplexx/obisdian-mac-touchbar/assets/62436912/ab6726df-7d0d-4d2f-af1c-43e8ee2f4100" width=800/>
+![Screenshot 2023-06-20 at 18 41 33](https://github.com/Frostplexx/obisdian-mac-touchbar/assets/62436912/59981b82-ff03-4bea-a763-1c69b8b48880)
 
 
 
-https://github.com/Frostplexx/obisdian-mac-touchbar/assets/62436912/613ad4aa-d51f-4cdf-8c5c-d720dc647819
+https://github.com/Frostplexx/obisdian-mac-touchbar/assets/62436912/fe467348-ffcf-4ae3-87bd-ac01ae8c26c1
 
 
 
