@@ -47,7 +47,12 @@ export default class MyPlugin extends Plugin {
 	}
 
 	onunload() {
+		//unload all the touchbar items
+		const {BrowserWindow} = require('electron').remote
+		const win = BrowserWindow.getFocusedWindow()
+		win.setTouchBar(null)
 
+		//unload all the listeners
 	}
 
 	async loadSettings() {
@@ -72,8 +77,8 @@ class SampleSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		containerEl.createEl('h2', {text: 'Add Touchbar Items'});
-		containerEl.createEl("p", {text: "To add an item to your touchbar, click the button below. You can then edit the item in the list below."})
+		containerEl.createEl('h2', {text: 'Touch Bar Items'});
+		containerEl.createEl("p", {text: "To add an item to your Touch Bar, click the button below. You can then edit the item in the list below."})
 
 		const modifyOrAddArray = async (item: ObsidianTouchBarItem) => {
 			//check for an item with the same id
@@ -240,8 +245,8 @@ class SampleSettingTab extends PluginSettingTab {
 		}
 
 		new Setting(containerEl)
-			.setName('Add Touchbar Item')
-			.setDesc('Add a new touchbar item')
+			.setName('Add Touch Bar item')
+			.setDesc('Click the "+" button to start creating a new Touch Bar item.')
 			.addButton(cb => {
 				cb.setButtonText('Add')
 					.onClick(async () => {
@@ -253,7 +258,7 @@ class SampleSettingTab extends PluginSettingTab {
 			})
 
 		const itemContainer = containerEl.createEl('div');
-		itemContainer.createEl('h2', {text: 'Current Touchbar Items'});
+		itemContainer.createEl('h2', {text: 'Current Touch Bar Items'});
 
 		const touchbarItems = this.plugin.settings.touchbarItems;
 		//list all the loaded items
@@ -269,9 +274,13 @@ class SampleSettingTab extends PluginSettingTab {
 		//Makro section
 
 		containerEl.createEl("h2", {text: "Macros"})
-		const description = containerEl.createEl("p", {text: "Use macros to give your touchbar items functionality."})
+		const description = containerEl.createEl("p", {text: "Use macros to give your Touch Bar items functionality, but be careful as these can have the ability to modify files in unintended ways! "})
 		description.style.fontSize = "0.9rem"
 		description.style.opacity = "0.7"
+		description.createEl("a", {
+			text: "List of available keycodes",
+			href: "https://www.electronjs.org/docs/latest/api/accelerator#available-key-codes",
+		})
 
 		const macroTable = containerEl.createEl("table")
 		macroTable.style.width = "100%"

@@ -1,9 +1,9 @@
 {
-	"id": "obsidian-mac-touchbar",
-	"name": "Mac Touchbar",
-	"version": "1.0.0",
+	"id": "obsidian-touchbar-macros",
+	"name": "Touch Bar Macros",
+	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "Adds support for running macros from the Mac Touchbar.",
+	"description": "This plugin adds support for running macros from the Mac Touch Bar.",
 	"author": "Frostplexx",
 	"authorUrl": "https://github.com/Frostplexx",
 	"fundingUrl": "https://Ko-fi.com/frostplexx",

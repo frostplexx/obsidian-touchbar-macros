@@ -2,13 +2,13 @@
 	"macros": [
 		{
 			"syntax": "[KEYCODE]",
-			"description": "This is how you press a key, where `KEYCODE` is the name of the key you want pressed",
+			"description": "This is how you press a key, where `KEYCODE` is the name of the key you want pressed. Keycodes can be found <a >here</a>.",
 			"example": "[Enter] [Backspace]"
 		},
 		{
 			"syntax": "[KEYCODE]+[KEYCODE]",
-			"description": "+ is used to add a modifier eg: [Cmd]+[P] for pressing Command-P",
-			"example": "[Cmd]+[P] [Cmd]+[A]"
+			"description": "+ is used to add a modifier eg: [Cmd]+[P] for pressing Command-P. Multiple modifiers are supported if you separate them with a space.",
+			"example": "[Cmd]+[P] [Cmd Shift]+[F]"
 		},
 		{
 			"syntax": ",DELAY,",

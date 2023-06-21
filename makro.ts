@@ -1,6 +1,4 @@
 import {App} from "obsidian";
-import {indexOf} from "builtin-modules";
-import * as trace_events from "trace_events";
 const electron = require('electron').remote
 /*
 * This function executes the makro written in the makro language
@@ -84,8 +82,8 @@ function pressKeys(app: App, key1: string, key2: string) {
 	//press the keys
 	const win = electron.BrowserWindow.getFocusedWindow()
 	//sleep for 10ms
-
-	win.webContents.sendInputEvent({keyCode: key2, type: "keyDown", modifiers: [key1]})
+	const mods = key1.split(" ")
+	win.webContents.sendInputEvent({keyCode: key2, type: "keyDown", modifiers: mods})
 
 	win.webContents.sendInputEvent({keyCode: key2, type: "keyUp"})
 }
