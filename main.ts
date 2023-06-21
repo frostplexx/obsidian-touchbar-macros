@@ -1,6 +1,6 @@
 import {App, Plugin, PluginSettingTab, setIcon, Setting} from 'obsidian';
 import {ObsidianTouchBarItem} from "./touchbar";
-import {executeMakro} from "./makro";
+import {executeMakro} from "./macro";
 
 // Remember to rename these classes and interfaces!
 
@@ -274,7 +274,7 @@ class SampleSettingTab extends PluginSettingTab {
 		//Makro section
 
 		containerEl.createEl("h2", {text: "Macros"})
-		const description = containerEl.createEl("p", {text: "Use macros to give your Touch Bar items functionality, but be careful as these can have the ability to modify files in unintended ways! "})
+		const description = containerEl.createEl("p", {text: "Use macros to give your Touch Bar items functionality, but be careful as these can have the ability to modify files in unintended ways! If you unsure please consider trying out the macro in a new vault first. "})
 		description.style.fontSize = "0.9rem"
 		description.style.opacity = "0.7"
 		description.createEl("a", {
