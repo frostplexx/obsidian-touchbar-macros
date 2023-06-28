@@ -21,19 +21,6 @@ https://github.com/Frostplexx/obisdian-mac-touchbar/assets/62436912/fe467348-ffc
 
 ## Installation
 
-### From within Obsidian
-
-From Obsidian v0.9.8, you can activate this plugin within Obsidian by doing the following:
-
-- Open Settings > Third-party plugin
-- Make sure Safe mode is **off**
-- Click Browse community plugins
-- Search for this plugin
-- Click Install
-- Once installed, close the community plugins window and activate the newly installed plugin
-- See [here](https://forum.obsidian.md/t/plugins-mini-faq/7737) for more information on how to enable and configure plugins in Obsidian
-- If you are still having trouble installing this plugin, feel free to open an issue [here](https://github.com/Frostplexx/obisdian-mac-touchbar/issues)
-
 ### From GitHub
 
 - Download the Latest Release from the Releases section of the GitHub Repository
