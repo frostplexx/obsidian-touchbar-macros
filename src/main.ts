@@ -1,19 +1,19 @@
 import {App, Plugin, PluginSettingTab, setIcon, Setting} from 'obsidian';
 import {ObsidianTouchBarItem} from "./touchbar";
-import {executeMakro} from "./macro";
+import {executeMacro} from "./macro";
 
 // Remember to rename these classes and interfaces!
 
-interface MyPluginSettings {
+interface TouchbarPluginSettings {
 	touchbarItems: ObsidianTouchBarItem[]
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
+const DEFAULT_SETTINGS: TouchbarPluginSettings = {
 	touchbarItems: [],
 }
 
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+export default class TouchBarMacros extends Plugin {
+	settings: TouchbarPluginSettings;
 
 	async onload() {
 		await this.loadSettings();
@@ -21,7 +21,7 @@ export default class MyPlugin extends Plugin {
 		this.updateTouchBar();
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.addSettingTab(new TouchBarSettingTab(this.app, this));
 	}
 
 	updateTouchBar() {
@@ -32,9 +32,10 @@ export default class MyPlugin extends Plugin {
 				label: item["label"],
 				backgroundColor: item["backgroundColor"],
 				click: () => {
-					executeMakro(this.app, item["makro"])
+					executeMacro(this.app, item["macro"])
 				}
 			})
+
 		});
 		const touchbar = new TouchBar({
 			items: items
@@ -64,10 +65,10 @@ export default class MyPlugin extends Plugin {
 	}
 }
 
-class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+class TouchBarSettingTab extends PluginSettingTab {
+	plugin: TouchBarMacros;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: TouchBarMacros) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -95,61 +96,16 @@ class SampleSettingTab extends PluginSettingTab {
 		}
 		const renderTouchbarItem = (item: ObsidianTouchBarItem) => {
 			const itemEl = itemContainer.createDiv('touchbar-item');
-			itemEl.style.display = 'flex';
-			itemEl.style.flexDirection = 'row';
-			itemEl.style.alignItems = 'center';
-			itemEl.style.marginBottom = '10px';
-			itemEl.style.justifyContent = 'space-between';
 
 			//create the move buttons
-			const moveButtons = itemEl.createDiv();
-			moveButtons.style.display = 'flex';
-			moveButtons.style.flexDirection = 'column';
-			moveButtons.style.alignItems = 'center';
-			moveButtons.style.marginRight = '10px';
+			const moveButtons = itemEl.createDiv("move-buttons-div");
 
-			const moveUp = moveButtons.createEl('button');
-			moveUp.style.backgroundColor = "inherit";
-			moveUp.style.border = 'none'
-			moveUp.style.outline = 'none'
-			moveUp.style.boxShadow = 'none'
-			moveUp.style.padding = '0'
-			moveUp.style.margin = '0'
-			moveUp.style.cursor = 'pointer'
-			moveUp.style.marginLeft = 'auto'
-			moveUp.style.cursor = 'pointer'
-			moveUp.style.height = "20px"
-			moveUp.style.opacity = "0.5"
+
+			const moveUp = moveButtons.createEl('button', "touchbar-item-button");
 			setIcon(moveUp, 'chevron-up')
 
-			const moveDown = moveButtons.createEl('button');
-			moveDown.style.backgroundColor = "inherit";
-			moveDown.style.border = 'none'
-			moveDown.style.outline = 'none'
-			moveDown.style.boxShadow = 'none'
-			moveDown.style.padding = '0'
-			moveDown.style.margin = '0'
-			moveDown.style.cursor = 'pointer'
-			moveDown.style.marginLeft = 'auto'
-			moveDown.style.height = "20px"
-			moveDown.style.opacity = "0.5"
+			const moveDown = moveButtons.createEl('button', "touchbar-item-button");
 			setIcon(moveDown, 'chevron-down')
-
-			moveUp.addEventListener("mouseover", () => {
-				moveUp.style.opacity = "1"
-			})
-
-			moveUp.addEventListener("mouseout", () => {
-				moveUp.style.opacity = "0.5"
-			})
-
-			moveDown.addEventListener("mouseover", () => {
-				moveDown.style.opacity = "1"
-			})
-
-			moveDown.addEventListener("mouseout", () => {
-				moveDown.style.opacity = "0.5"
-			})
 
 			moveUp.addEventListener('click', async () => {
 				//move the item up in the array
@@ -178,47 +134,28 @@ class SampleSettingTab extends PluginSettingTab {
 			//create the input fields
 			const labelIn = itemEl.createEl("input", {
 				type: "text",
-				value: item['label']
-			})
-			labelIn.style.marginRight = '10px'
+				value: item['label'],
+			});
+			labelIn.classList.add('touchbar-item-input')
 			labelIn.placeholder = 'Label'
 
 			const colorIn = itemEl.createEl("input", {
 				type: "color",
 				value: item['backgroundColor'],
 			});
-			colorIn.style.marginRight = '10px'
+			colorIn.classList.add('touchbar-item-input')
 			colorIn.placeholder = 'Background Color'
 
 			const makroIn = itemEl.createEl("input", {
 				type: "text",
-				value: item['makro'],
+				value: item['macro'],
 			});
-			makroIn.style.marginRight = '10px'
+			makroIn.classList.add('touchbar-item-input')
+			makroIn.classList.add("wide-input")
 			makroIn.placeholder = 'Macro'
-			makroIn.style.width = '100%'
 
-			const removeButton = itemEl.createEl('button');
-			removeButton.style.backgroundColor = "inherit";
-			removeButton.style.border = 'none'
-			removeButton.style.outline = 'none'
-			removeButton.style.boxShadow = 'none'
-			removeButton.style.padding = '0'
-			removeButton.style.margin = '0'
-			removeButton.style.cursor = 'pointer'
-			removeButton.style.marginLeft = 'auto'
-			removeButton.style.opacity = "0.5"
+			const removeButton = itemEl.createEl('button', "touchbar-item-button remove-button");
 			setIcon(removeButton, 'x')
-
-			removeButton.addEventListener("mouseover", () => {
-				removeButton.style.opacity = "1"
-				removeButton.style.color = "red"
-			});
-
-			removeButton.addEventListener("mouseout", () => {
-				removeButton.style.opacity = "0.5"
-				removeButton.style.color = "inherit"
-			});
 
 			removeButton.onclick = async () => {
 				//remove the item
@@ -239,7 +176,7 @@ class SampleSettingTab extends PluginSettingTab {
 			}
 
 			makroIn.onchange = async () => {
-				item["makro"] = makroIn.value
+				item["macro"] = makroIn.value
 				await modifyOrAddArray(item)
 			}
 		}
@@ -270,27 +207,17 @@ class SampleSettingTab extends PluginSettingTab {
 
 		//add divider
 		containerEl.createEl('hr');
-		// containerEl.style.overflow = "hidden"
 		//Makro section
 
 		containerEl.createEl("h2", {text: "Macros"})
 		const description = containerEl.createEl("p", {text: "Use macros to give your Touch Bar items functionality, but be careful as these can have the ability to modify files in unintended ways! If you unsure please consider trying out the macro in a new vault first. "})
-		description.style.fontSize = "0.9rem"
-		description.style.opacity = "0.7"
+		description.classList.add("touchbar-settings-description")
 		description.createEl("a", {
 			text: "List of available keycodes",
 			href: "https://www.electronjs.org/docs/latest/api/accelerator#available-key-codes",
 		})
 
-		const macroTable = containerEl.createEl("table")
-		macroTable.style.width = "100%"
-		macroTable.style.marginBottom = "10px"
-		macroTable.style.fontSize = "0.9rem"
-		//add border
-		macroTable.style.border = "2px solid var(--background-secondary)"
-		macroTable.style.borderRadius = "5px"
-		macroTable.style.padding = "10px"
-		macroTable.style.borderCollapse = "collapse"
+		const macroTable = containerEl.createEl("table", "touchbar-macro-table")
 		const macroTableHead = macroTable.createEl("thead")
 		const macroTableHeadRow = macroTableHead.createEl("tr")
 		const macroTableHeadRowName = macroTableHeadRow.createEl("th")
@@ -308,20 +235,12 @@ class SampleSettingTab extends PluginSettingTab {
 		//loop through the makro descriptions and add them to the table
 		for (let i = 0; i < macros.length; i++) {
 			const row = macroTableBody.createEl("tr")
-			const name = row.createEl("td")
-			const desc = row.createEl("td")
-			const example = row.createEl("td")
+			const name = row.createEl("td", "touchbar-macro-table-border")
+			const desc = row.createEl("td", "touchbar-macro-table-border")
+			const example = row.createEl("td", "touchbar-macro-table-border")
 			name.setText(macros[i]["syntax"])
 			desc.setText(macros[i]["description"])
 			example.setText(macros[i]["example"])
-
-			Array.from(row.children).map((child) => {
-				(child as any).style.border = "2px solid var(--background-secondary)"
-			})
-			Array.from(row.children).map((child) => {
-				(child as any).style.padding = "10px"
-			});
-
 		}
 
 	}

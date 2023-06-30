@@ -1,8 +1,8 @@
 {
 	"name": "obsidian-mac-touchbar",
 	"version": "1.0.0",
-	"description": "Adds a touchbar support to Obsidian on Mac",
-	"main": "main.js",
+	"description": "Adds touchbar support to Obsidian on Mac",
+	"main": "src/main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",

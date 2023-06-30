@@ -13,7 +13,7 @@ const electron = require('electron').remote
 * | ( ){REPEAT} | () is used to repeat the previous command where `REPEAT` is the amount of times to repeat      |
 */
 
-export function executeMakro(app: App, makro: string) {
+export function executeMacro(app: App, makro: string) {
 	//parse the input, which is just one long string of the commands above
 	const commands = parseMacro(makro)
 	//execute the commands
@@ -24,7 +24,7 @@ let repeatcounter = 0
 async function executeCommands(app: App, commands: MacroCommand[]) {
 	console.log(commands)
 	for (const command of commands) {
-		if (command.command === MakroCommandType.RepeatStart) {
+		if (command.command === MacroCommandType.RepeatStart) {
 			repeatcounter = parseInt(command.argument);
 		}
 
@@ -32,28 +32,28 @@ async function executeCommands(app: App, commands: MacroCommand[]) {
 		if (repeatcounter > 0) {
 			for (let i = 0; i < repeatcounter - 1; i++) {
 				//get the subarray which is everything between the repeat start and the repeat end
-				const insideCommands = commands.slice(commands.indexOf(command) + 1, commands.indexOf(<MacroCommand>commands.find((command) => command.command === MakroCommandType.RepeatEnd)))
+				const insideCommands = commands.slice(commands.indexOf(command) + 1, commands.indexOf(<MacroCommand>commands.find((command) => command.command === MacroCommandType.RepeatEnd)))
 				executeCommands(app, insideCommands)
 			}
 		}
 
 		//check if the current command is a keycode command and the next is a presskeys command
-		if (command.command === MakroCommandType.PressKey && commands[commands.indexOf(command) + 1]?.command === MakroCommandType.PressKeys && commands[commands.indexOf(command) + 2]?.command === MakroCommandType.PressKey) {
+		if (command.command === MacroCommandType.PressKey && commands[commands.indexOf(command) + 1]?.command === MacroCommandType.PressKeys && commands[commands.indexOf(command) + 2]?.command === MacroCommandType.PressKey) {
 			//press those two keys together
 			pressKeys(app, command.argument, commands[commands.indexOf(command) + 2]?.argument)
 		} else {
 			//execute the command
 			switch (command.command) {
-				case MakroCommandType.PressKey:
+				case MacroCommandType.PressKey:
 					pressKey(app, command.argument)
 					break
-				case MakroCommandType.AddText:
+				case MacroCommandType.AddText:
 					addText(app, command.argument)
 					break
-				case MakroCommandType.Delay:
+				case MacroCommandType.Delay:
 					await waitFor(command.argument)
 					break
-				case MakroCommandType.AddComment:
+				case MacroCommandType.AddComment:
 					break
 
 			}
@@ -133,7 +133,7 @@ function parseMacro(macro: string) {
 					commandStarted = false
 					currentCommand += command
 					parsedCommands.push({
-						command: MakroCommandType.PressKey,
+						command: MacroCommandType.PressKey,
 						argument: currentArgument
 					});
 					currentArgument = ""
@@ -151,7 +151,7 @@ function parseMacro(macro: string) {
 					commandStarted = false
 					currentCommand += command
 					parsedCommands.push({
-						command: MakroCommandType.PressKeys,
+						command: MacroCommandType.PressKeys,
 						argument: ""
 					});
 					currentArgument = ""
@@ -168,7 +168,7 @@ function parseMacro(macro: string) {
 					currentCommand += command
 					if (!commandStarted) {
 						parsedCommands.push({
-							command: MakroCommandType.AddText,
+							command: MacroCommandType.AddText,
 							argument: currentArgument
 						});
 						commandEscaped = false;
@@ -186,7 +186,7 @@ function parseMacro(macro: string) {
 					currentCommand += command
 					if (!commandStarted) {
 						parsedCommands.push({
-							command: MakroCommandType.AddComment,
+							command: MacroCommandType.AddComment,
 							argument: currentArgument
 						});
 					}
@@ -206,7 +206,7 @@ function parseMacro(macro: string) {
 					currentCommand += command
 					if (!commandStarted) {
 						parsedCommands.push({
-							command: MakroCommandType.Delay,
+							command: MacroCommandType.Delay,
 							argument: currentArgument
 						});
 					}
@@ -235,7 +235,7 @@ function parseMacro(macro: string) {
 					currentCommand += command
 					if (!commandStarted) {
 						parsedCommands.push({
-							command: MakroCommandType.RepeatStart,
+							command: MacroCommandType.RepeatStart,
 							argument: currentArgument
 						});
 					}
@@ -260,7 +260,7 @@ function parseMacro(macro: string) {
 					currentCommand += command
 					if (!commandStarted) {
 						parsedCommands.push({
-							command: MakroCommandType.RepeatEnd,
+							command: MacroCommandType.RepeatEnd,
 							argument: ""
 						});
 					}
@@ -278,11 +278,11 @@ function parseMacro(macro: string) {
 
 
 interface MacroCommand {
-	command: MakroCommandType,
+	command: MacroCommandType,
 	argument: string
 }
 
-enum MakroCommandType {
+enum MacroCommandType {
 	PressKey,
 	PressKeys,
 	AddText,

@@ -3,13 +3,13 @@ export class ObsidianTouchBarItem {
 	label: string
 	backgroundColor: string
 	id: string
-	makro: string
+	macro: string
 
-	constructor(label: string, backgroundColor: string,  makro: string) {
+	constructor(label: string, backgroundColor: string,  macro: string) {
 		this.label = label
 		this.backgroundColor = backgroundColor
 		this.id = this.generateId()
-		this.makro = makro
+		this.macro = macro
 	}
 
 	getLabel(): string {
@@ -21,8 +21,8 @@ export class ObsidianTouchBarItem {
 	}
 
 
-	getMakro(): string {
-		return this.makro
+	getMacro(): string {
+		return this.macro
 	}
 
 	setLabel(label: string) {
