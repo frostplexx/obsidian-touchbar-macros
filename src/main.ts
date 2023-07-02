@@ -1,11 +1,13 @@
 import {App, Plugin, PluginSettingTab, setIcon, Setting} from 'obsidian';
-import {ObsidianTouchBarItem} from "./touchbar";
+import {ObsidianTouchBarItem, SerializedTouchBarItem} from "./touchbarItems/touchBarItems";
 import {executeMacro} from "./macro";
+import {deserializeTouchBarItem} from "./touchbarItems/touchBarItems.utils";
+import {ObsidianTouchBarButton, TouchBarButtonProperties} from "./touchbarItems/items/button";
+import {ObsidianTouchBarLabel, TouchBarLabelProperties} from "./touchbarItems/items/label";
 
-// Remember to rename these classes and interfaces!
 
 interface TouchbarPluginSettings {
-	touchbarItems: ObsidianTouchBarItem[]
+	touchbarItems: SerializedTouchBarItem[]
 }
 
 const DEFAULT_SETTINGS: TouchbarPluginSettings = {
@@ -27,24 +29,20 @@ export default class TouchBarMacros extends Plugin {
 	updateTouchBar() {
 		const {BrowserWindow, TouchBar} = require('electron').remote
 
+		// load all the items from the settings
 		const items = this.settings.touchbarItems.map((item) => {
-			return new TouchBar.TouchBarButton({
-				label: item["label"],
-				backgroundColor: item["backgroundColor"],
-				click: () => {
-					executeMacro(this.app, item["macro"])
-				}
-			})
+			return deserializeTouchBarItem(item).getDisplayAbleItem()
 
 		});
-		const touchbar = new TouchBar({
-			items: items
-		})
+
+		if(items.length === 0) return; //don't do anything if there are no items
 
 		//get the main window
 		const win = BrowserWindow.getFocusedWindow()
 		//set the touchbar
-		win.setTouchBar(touchbar)
+		win.setTouchBar(new TouchBar({
+			items: items
+		}))
 	}
 
 	onunload() {
@@ -81,7 +79,7 @@ class TouchBarSettingTab extends PluginSettingTab {
 		containerEl.createEl('h2', {text: 'Touch Bar Items'});
 		containerEl.createEl("p", {text: "To add an item to your Touch Bar, click the button below. You can then edit the item in the list below."})
 
-		const modifyOrAddArray = async (item: ObsidianTouchBarItem) => {
+		const modifyOrAddArray = async (item: ObsidianTouchBarButton) => {
 			//check for an item with the same id
 			const index = this.plugin.settings.touchbarItems.findIndex((element) => element.id === item.id)
 			if (index === -1) {
@@ -94,7 +92,13 @@ class TouchBarSettingTab extends PluginSettingTab {
 			this.plugin.updateTouchBar()
 			await this.plugin.saveSettings()
 		}
-		const renderTouchbarItem = (item: ObsidianTouchBarItem) => {
+
+		/**
+		 * Creates a new touchbar button item for the user to fill out
+		 * TODO rewrite this function to support all touchbar items
+		 * @param item
+		 */
+		const createTouchbarItem = (item: ObsidianTouchBarItem) => {
 			const itemEl = itemContainer.createDiv('touchbar-item');
 
 			//create the move buttons
@@ -134,21 +138,21 @@ class TouchBarSettingTab extends PluginSettingTab {
 			//create the input fields
 			const labelIn = itemEl.createEl("input", {
 				type: "text",
-				value: item['label'],
+				value: item["properties"]['label'],
 			});
 			labelIn.classList.add('touchbar-item-input')
 			labelIn.placeholder = 'Label'
 
 			const colorIn = itemEl.createEl("input", {
 				type: "color",
-				value: item['backgroundColor'],
+				value: item["properties"]['backgroundColor'],
 			});
 			colorIn.classList.add('touchbar-item-input')
 			colorIn.placeholder = 'Background Color'
 
 			const makroIn = itemEl.createEl("input", {
 				type: "text",
-				value: item['macro'],
+				value: item["properties"]['macro'],
 			});
 			makroIn.classList.add('touchbar-item-input')
 			makroIn.classList.add("wide-input")
@@ -166,28 +170,81 @@ class TouchBarSettingTab extends PluginSettingTab {
 			}
 
 			labelIn.onchange = async () => {
-				item["label"] = labelIn.value
+				item["properties"]["label"] = labelIn.value
 				await modifyOrAddArray(item)
 			}
 
 			colorIn.onchange = async () => {
-				item["backgroundColor"] = colorIn.value
+				item["properties"]["backgroundColor"] = colorIn.value
 				await modifyOrAddArray(item)
 			}
 
 			makroIn.onchange = async () => {
-				item["macro"] = makroIn.value
+				item["properties"]["macro"] = makroIn.value
 				await modifyOrAddArray(item)
 			}
 		}
+
+		//this is a dropdown that shows up when clicking the add button to select the type of touchbar item you want to add
 
 		new Setting(containerEl)
 			.setName('Add Touch Bar item')
 			.setDesc('Click the "+" button to start creating a new Touch Bar item.')
 			.addButton(cb => {
 				cb.setButtonText('Add')
-					.onClick(async () => {
-						renderTouchbarItem(new ObsidianTouchBarItem('', '#FFFFFF', ""))
+					.onClick(async (event) => {
+						//create a div containing all the options under the mouse cursor
+						const mousePos = {x: event.offsetX, y: event.offsetY}
+						const dropdown = containerEl.createDiv('touchbar-dropdown');
+						console.log(mousePos)
+						//move the item under the mouse cursor
+						dropdown.style.right = mousePos.x + 'px'
+						dropdown.style.top = mousePos.y + 'px'
+
+						dropdown.addEventListener('mouseleave', () => {
+							dropdown.remove()
+						});
+
+						//create the buttons
+						const button = (text: string,  onClick: () => void) => {
+							const button = dropdown.createEl('button', 'touchbar-dropdown-button');
+							button.createEl('span', {text: text});
+							button.classList.add('touchbar-dropdown-button')
+							button.addEventListener('click', () => {
+								onClick()
+								dropdown.remove()
+							})
+						}
+
+						button('Button', () => {
+							createTouchbarItem(new ObsidianTouchBarButton({label: 'Button', macro: ''} as TouchBarButtonProperties))
+						});
+
+						button('Label', () => {
+							createTouchbarItem(new ObsidianTouchBarLabel({label: 'Label'} as TouchBarLabelProperties))
+						});
+
+						button('Spacer', () => {
+
+						});
+
+						button('Slider', () => {
+
+						});
+
+						button('Segmented Control', () => {
+
+						});
+
+						button('Popover', () => {
+
+						});
+
+						button('Scrubber', () => {
+
+						});
+
+
 					})
 					.setTooltip('Add a new touchbar item')
 					.setIcon('plus')
@@ -201,7 +258,7 @@ class TouchBarSettingTab extends PluginSettingTab {
 		//list all the loaded items
 		console.log(touchbarItems)
 		for (let i = 0; i < touchbarItems.length; i++) {
-			renderTouchbarItem(touchbarItems[i]);
+			createTouchbarItem(touchbarItems[i] as ObsidianTouchBarButton);
 		}
 
 
