@@ -32,7 +32,13 @@ export abstract class ObsidianTouchBarItem {
 	/**
 	 * Returns the corresponding object, that can directly be put into the touchbar array
 	 */
-	abstract getDisplayAbleItem(): any;
+	abstract getItemForElectron(): any;
+
+	/**
+	 * Returns the corresponding HTML element, that can be displayed in the settings
+	 * @returns {HTMLElement}
+	 */
+	abstract  getItemForDisplay(): HTMLElement;
 }
 
 

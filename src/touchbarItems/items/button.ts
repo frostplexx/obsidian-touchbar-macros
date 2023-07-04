@@ -1,5 +1,6 @@
 import {ObsidianTouchBarItem, TouchBarItemType} from "../touchBarItems";
 import {executeMacro} from "../../macro";
+
 const {TouchBar} = require('electron').remote
 
 /**
@@ -11,14 +12,55 @@ export class ObsidianTouchBarButton extends ObsidianTouchBarItem {
 		this.type = TouchBarItemType.ObsidianTouchBarButton;
 	}
 
-	getDisplayAbleItem(): any {
+	getItemForElectron(): any {
 		return new TouchBar.TouchBarButton({
-			label: this.properties["label"],
-			backgroundColor: this.properties["backgroundColor"],
+			label: this.properties.label,
+			backgroundColor: this.properties.backgroundColor,
 			click: () => {
-				executeMacro(this.app, this.properties["macro"])
+				executeMacro(this.app, this.properties.macro)
 			}
 		});
+	}
+
+	getItemForDisplay(): HTMLElement {
+		const itemEl = document.createElement("div");
+		itemEl.classList.add('touchbar-item-list')
+		//create the input fields
+		const labelIn = itemEl.createEl("input", {
+			type: "text",
+			value: this.properties.label,
+		});
+		labelIn.classList.add('touchbar-item-input')
+		labelIn.placeholder = 'Label'
+
+		const colorIn = itemEl.createEl("input", {
+			type: "color",
+			value: this.properties.backgroundColor,
+		});
+		colorIn.classList.add('touchbar-item-input')
+		colorIn.placeholder = 'Background Color'
+
+		const makroIn = itemEl.createEl("input", {
+			type: "text",
+			value: this.properties.macro,
+		});
+		makroIn.classList.add('touchbar-item-input')
+		makroIn.classList.add("wide-input")
+		makroIn.placeholder = 'Macro'
+
+
+		labelIn.onchange = async () => {
+			this.properties.label = labelIn.value
+		}
+
+		colorIn.onchange = async () => {
+			this.properties.backgroundColor = colorIn.value
+		}
+
+		makroIn.onchange = async () => {
+			this.properties.macro = makroIn.value
+		}
+		return itemEl
 	}
 }
 
