@@ -2,8 +2,6 @@ import {App, Plugin, PluginSettingTab, setIcon, Setting} from 'obsidian';
 import {ObsidianTouchBarItem} from "./touchbar";
 import {executeMacro} from "./macro";
 
-// Remember to rename these classes and interfaces!
-
 interface TouchbarPluginSettings {
 	touchbarItems: ObsidianTouchBarItem[]
 }
