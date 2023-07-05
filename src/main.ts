@@ -3,6 +3,26 @@ import {ObsidianTouchBarItem, SerializedTouchBarItem} from "./touchbarItems/touc
 import {deserializeTouchBarItem} from "./touchbarItems/touchBarItems.utils";
 import {ObsidianTouchBarButton, TouchBarButtonProperties} from "./touchbarItems/items/button";
 import {ObsidianTouchBarLabel, TouchBarLabelProperties} from "./touchbarItems/items/label";
+import {
+	ObsidianTouchBarSpacer,
+	ObsidianTouchBarSpacerSize,
+	TouchBarSpacerProperties
+} from "./touchbarItems/items/spacer";
+import {ObsidianTouchBarSlider, TouchBarSliderProperties} from "./touchbarItems/items/slider";
+import {
+	ObsidianTouchBarSegmentedControl,
+	SegmentedControlMode,
+	SegmentedControlSegment,
+	SegmentedControlSegmentStyle,
+	TouchBarSegmentedControlProperties
+} from "./touchbarItems/items/segmented_control";
+import {ObsidianTouchBarPopover, TouchBarPopoverProperties} from "./touchbarItems/items/popover";
+import {
+	ObsidianTouchBarScrubber, ScrubberItem,
+	TouchBarScrubberMode,
+	TouchBarScrubberProperties,
+	TouchBarScrubberSelectedStyle
+} from "./touchbarItems/items/scrubber";
 
 
 interface TouchbarPluginSettings {
@@ -34,7 +54,7 @@ export default class TouchBarMacros extends Plugin {
 
 		});
 
-		if(items.length === 0) return; //don't do anything if there are no items
+		if (items.length === 0) return; //don't do anything if there are no items
 
 		//get the main window
 		const win = BrowserWindow.getFocusedWindow()
@@ -53,6 +73,7 @@ export default class TouchBarMacros extends Plugin {
 		//unload all the listeners
 	}
 
+
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 	}
@@ -69,6 +90,7 @@ class TouchBarSettingTab extends PluginSettingTab {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
+
 
 	display(): void {
 		const {containerEl} = this;
@@ -137,7 +159,7 @@ class TouchBarSettingTab extends PluginSettingTab {
 			const items = item.getItemForDisplay()
 			itemEl.append(items)
 			//add event listeners to all the inputs
-			items.querySelectorAll('input').forEach((input) => {
+			items.querySelectorAll('.touchbar-item-input').forEach((input) => {
 				input.addEventListener('change', async () => {
 					await modifyOrAddArray(item)
 				})
@@ -176,7 +198,7 @@ class TouchBarSettingTab extends PluginSettingTab {
 						});
 
 						//create the buttons
-						const button = (text: string,  onClick: () => void) => {
+						const button = (text: string, onClick: () => void) => {
 							const button = dropdown.createEl('button', 'touchbar-dropdown-button');
 							button.createEl('span', {text: text});
 							button.classList.add('touchbar-dropdown-button')
@@ -188,7 +210,10 @@ class TouchBarSettingTab extends PluginSettingTab {
 
 						button('Button', () => {
 							console.log('button')
-							createTouchbarItem(new ObsidianTouchBarButton({label: '', macro: ''} as TouchBarButtonProperties))
+							createTouchbarItem(new ObsidianTouchBarButton({
+								label: '',
+								macro: ''
+							} as TouchBarButtonProperties))
 						});
 
 						button('Label', () => {
@@ -196,23 +221,53 @@ class TouchBarSettingTab extends PluginSettingTab {
 						});
 
 						button('Spacer', () => {
-
+							createTouchbarItem(new ObsidianTouchBarSpacer({size: ObsidianTouchBarSpacerSize.small} as TouchBarSpacerProperties))
 						});
 
 						button('Slider', () => {
-
+							createTouchbarItem(new ObsidianTouchBarSlider({
+								label: "",
+								minValue: NaN,
+								maxValue: NaN,
+								value: NaN,
+								change: () => {
+								}
+							} as TouchBarSliderProperties))
 						});
 
 						button('Segmented Control', () => {
-
+							createTouchbarItem(new ObsidianTouchBarSegmentedControl({
+								segmentStyle: SegmentedControlSegmentStyle.automatic,
+								mode: SegmentedControlMode.buttons,
+								segments: [] as SegmentedControlSegment[],
+								selectedIndex: NaN,
+								change: () => {
+								}
+							} as TouchBarSegmentedControlProperties))
 						});
 
 						button('Popover', () => {
-
+							createTouchbarItem(new ObsidianTouchBarPopover({
+								label: "",
+								icon: null,
+								items: null,
+								showCloseButton: true
+							} as TouchBarPopoverProperties))
 						});
 
 						button('Scrubber', () => {
-
+							createTouchbarItem(new ObsidianTouchBarScrubber({
+								items: [] as ScrubberItem[],
+								continuous: true,
+								showArrowButtons: false,
+								selectedStyle: TouchBarScrubberSelectedStyle.none,
+								highlight: () => {
+								},
+								mode: TouchBarScrubberMode.free,
+								overlayStyle: TouchBarScrubberSelectedStyle.none,
+								select: () => {
+								}
+							} as TouchBarScrubberProperties))
 						});
 
 
@@ -258,7 +313,7 @@ class TouchBarSettingTab extends PluginSettingTab {
 
 
 		//load the syntax names and descriptions from macro_desc.json
-		const { macros } = require('./macro_desc.json')
+		const {macros} = require('./macro_desc.json')
 
 		//loop through the makro descriptions and add them to the table
 		for (let i = 0; i < macros.length; i++) {

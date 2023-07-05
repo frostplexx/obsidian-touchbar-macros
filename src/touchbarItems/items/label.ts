@@ -1,4 +1,5 @@
 import {ObsidianTouchBarItem, TouchBarItemType} from "../touchBarItems";
+
 const {TouchBar} = require('electron').remote
 
 

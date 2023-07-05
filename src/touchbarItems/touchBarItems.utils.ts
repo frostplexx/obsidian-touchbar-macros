@@ -1,6 +1,11 @@
 import {SerializedTouchBarItem, TouchBarItemType} from "./touchBarItems";
 import {ObsidianTouchBarButton} from "./items/button";
 import {ObsidianTouchBarLabel} from "./items/label";
+import {ObsidianTouchBarSpacer} from "./items/spacer";
+import {ObsidianTouchBarSlider} from "./items/slider";
+import {ObsidianTouchBarSegmentedControl} from "./items/segmented_control";
+import {ObsidianTouchBarPopover} from "./items/popover";
+import {ObsidianTouchBarScrubber} from "./items/scrubber";
 
 export function deserializeTouchBarItem(serializedItem: SerializedTouchBarItem) {
 	switch (serializedItem.type) {
@@ -13,15 +18,15 @@ export function deserializeTouchBarItem(serializedItem: SerializedTouchBarItem) 
 		case TouchBarItemType.ObsidianTouchBarGroup:
 			throw new Error("Unknown touch bar item type: " + serializedItem.type);
 		case TouchBarItemType.ObsidianTouchBarPopover:
-			throw new Error("Unknown touch bar item type: " + serializedItem.type);
+			return new ObsidianTouchBarPopover(serializedItem.properties)
 		case TouchBarItemType.ObsidianTouchBarScrubber:
-			throw new Error("Unknown touch bar item type: " + serializedItem.type);
+			return new ObsidianTouchBarScrubber(serializedItem.properties);
 		case TouchBarItemType.ObsidianTouchBarSegmentedControl:
-			throw new Error("Unknown touch bar item type: " + serializedItem.type);
+			return new ObsidianTouchBarSegmentedControl(serializedItem.properties);
 		case TouchBarItemType.ObsidianTouchBarSlider:
-			throw new Error("Unknown touch bar item type: " + serializedItem.type);
+			return new ObsidianTouchBarSlider(serializedItem.properties);
 		case TouchBarItemType.ObsidianTouchBarSpacer:
-			throw new Error("Unknown touch bar item type: " + serializedItem.type);
+			return new ObsidianTouchBarSpacer(serializedItem.properties);
 		default:
 			throw new Error("Unknown touch bar item type: " + serializedItem.type);
 	}

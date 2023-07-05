@@ -2,7 +2,6 @@ import {executeMacro} from "../macro";
 import {App} from "obsidian";
 
 
-
 /**
  * Abstract class reperesenting a touch bar item
  */
@@ -38,7 +37,7 @@ export abstract class ObsidianTouchBarItem {
 	 * Returns the corresponding HTML element, that can be displayed in the settings
 	 * @returns {HTMLElement}
 	 */
-	abstract  getItemForDisplay(): HTMLElement;
+	abstract getItemForDisplay(): HTMLElement;
 }
 
 
@@ -50,7 +49,6 @@ export interface SerializedTouchBarItem {
 	id: string
 	properties: any
 }
-
 
 
 /**
