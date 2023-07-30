@@ -7,8 +7,8 @@ const {TouchBar} = require('electron').remote
  * Represents a touch bar button
  */
 export class ObsidianTouchBarButton extends ObsidianTouchBarItem {
-	constructor(properties: TouchBarButtonProperties) {
-		super(properties);
+	constructor(properties: TouchBarButtonProperties, id: string = "") {
+		super(properties, id);
 		this.type = TouchBarItemType.ObsidianTouchBarButton;
 	}
 

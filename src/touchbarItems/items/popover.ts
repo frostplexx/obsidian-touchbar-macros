@@ -3,8 +3,8 @@ import {ObsidianTouchBarItem, TouchBarItemType} from "../touchBarItems";
 const {TouchBar} = require('electron').remote
 
 export class ObsidianTouchBarPopover extends ObsidianTouchBarItem {
-	constructor(properties: TouchBarPopoverProperties) {
-		super(properties);
+	constructor(properties: TouchBarPopoverProperties, id: string = "") {
+		super(properties, id);
 		this.type = TouchBarItemType.ObsidianTouchBarPopover;
 	}
 

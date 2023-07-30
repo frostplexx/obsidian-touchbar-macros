@@ -3,8 +3,8 @@ const {TouchBar} = require('electron').remote
 
 
 export class ObsidianTouchBarSegmentedControl extends ObsidianTouchBarItem {
-	constructor(properties: TouchBarSegmentedControlProperties) {
-		super(properties);
+	constructor(properties: TouchBarSegmentedControlProperties, id: string = "") {
+		super(properties, id);
 		this.type = TouchBarItemType.ObsidianTouchBarSegmentedControl;
 	}
 

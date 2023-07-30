@@ -4,8 +4,8 @@ const {TouchBar} = require('electron').remote
 
 
 export class ObsidianTouchBarLabel extends ObsidianTouchBarItem {
-	constructor(properties: TouchBarLabelProperties) {
-		super(properties);
+	constructor(properties: TouchBarLabelProperties, id: string = "") {
+		super(properties, id);
 		this.type = TouchBarItemType.ObsidianTouchBarLabel;
 	}
 

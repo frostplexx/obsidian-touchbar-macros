@@ -4,8 +4,8 @@ const {TouchBar} = require('electron').remote
 
 
 export class ObsidianTouchBarSlider extends ObsidianTouchBarItem {
-	constructor(properties: TouchBarSliderProperties) {
-		super(properties);
+	constructor(properties: TouchBarSliderProperties, id: string ="") {
+		super(properties, id);
 		this.type = TouchBarItemType.ObsidianTouchBarSlider;
 	}
 

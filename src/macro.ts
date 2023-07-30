@@ -20,6 +20,13 @@ export function executeMacro(app: App, makro: string) {
 	executeCommands(app, commands)
 }
 
+/**
+ * Executes a series of commands.
+ *
+ * @param {App} app - The application object.
+ * @param {MacroCommand[]} commands - The list of commands to execute.
+ *
+ */
 let repeatcounter = 0
 async function executeCommands(app: App, commands: MacroCommand[]) {
 	console.log(commands)
@@ -61,12 +68,25 @@ async function executeCommands(app: App, commands: MacroCommand[]) {
 	}
 }
 
+/**
+ * Waits for a specified amount of time before resolving a Promise.
+ * @param {string} argument - The amount of time to wait in milliseconds.
+ * @return {Promise} - A Promise that resolves after the specified amount of time has elapsed.
+ */
 function waitFor(argument: string) {
 	//sleep for the amount of time specified in the argument
 	return new Promise(resolve => setTimeout(resolve, parseInt(argument)))
 }
 
 
+/**
+ * Adds the specified text to the application.
+ *
+ * @param {App} app - The application object.
+ * @param {string} text - The text to add.
+ *
+ * @return {void}
+ */
 function addText(app: App, text: string) {
 	//add the text
 	console.log(text)
@@ -78,6 +98,14 @@ function addText(app: App, text: string) {
 	})
 }
 
+/**
+ * Presses two keys simultaneously.
+ *
+ * @param {App} app - The application instance.
+ * @param {string} key1 - The first key to press (can be a combination of modifier keys and a regular key).
+ * @param {string} key2 - The second key to press (regular key).
+ * @return {void}
+ */
 function pressKeys(app: App, key1: string, key2: string) {
 	//press the keys
 	const win = electron.BrowserWindow.getFocusedWindow()
@@ -88,6 +116,14 @@ function pressKeys(app: App, key1: string, key2: string) {
 	win.webContents.sendInputEvent({keyCode: key2, type: "keyUp"})
 }
 
+/**
+ * Presses a key on the focused window of an Electron application.
+ *
+ * @param {App} app - The Electron application instance.
+ * @param {string} key - The key to be pressed.
+ *
+ * @return {void} - This method does not return any value.
+ */
 function pressKey(app: App, key: string) {
 	//press the key
 	console.log(key)

@@ -1,6 +1,9 @@
 import {App, Plugin, PluginSettingTab, setIcon, Setting} from 'obsidian';
 import {ObsidianTouchBarItem, SerializedTouchBarItem} from "./touchbarItems/touchBarItems";
-import {deserializeTouchBarItem} from "./touchbarItems/touchBarItems.utils";
+import {
+	deserializeTouchBarItem,
+	getTouchBarItemIconAndName
+} from "./touchbarItems/touchBarItems.utils";
 import {ObsidianTouchBarButton, TouchBarButtonProperties} from "./touchbarItems/items/button";
 import {ObsidianTouchBarLabel, TouchBarLabelProperties} from "./touchbarItems/items/label";
 import {
@@ -132,6 +135,14 @@ class TouchBarSettingTab extends PluginSettingTab {
 			const moveDown = moveButtons.createEl('button', "touchbar-item-button");
 			setIcon(moveDown, 'chevron-down')
 
+			const {name, icon} = getTouchBarItemIconAndName(item)
+
+			const itemIcon = itemEl.createDiv("item-icon")
+			setIcon(itemIcon, icon)
+			const toolTip = itemIcon.createEl("span", "item-tooltip")
+			toolTip.classList.add("tooltip")
+			toolTip.innerText = name;
+
 			moveUp.addEventListener('click', async () => {
 				//move the item up in the array
 				const index = this.plugin.settings.touchbarItems.findIndex((element) => element.id === item.id)
@@ -188,7 +199,6 @@ class TouchBarSettingTab extends PluginSettingTab {
 						//create a div containing all the options under the mouse cursor
 						const mousePos = {x: event.offsetX, y: event.offsetY}
 						const dropdown = containerEl.createDiv('touchbar-dropdown');
-						console.log(mousePos)
 						//move the item under the mouse cursor
 						dropdown.style.right = mousePos.x + 'px'
 						dropdown.style.top = mousePos.y + 'px'
@@ -235,7 +245,7 @@ class TouchBarSettingTab extends PluginSettingTab {
 							} as TouchBarSliderProperties))
 						});
 
-						button('Segmented Control', () => {
+						button('Seg. Control', () => {
 							createTouchbarItem(new ObsidianTouchBarSegmentedControl({
 								segmentStyle: SegmentedControlSegmentStyle.automatic,
 								mode: SegmentedControlMode.buttons,

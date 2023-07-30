@@ -4,8 +4,8 @@ const {TouchBar} = require('electron').remote
 
 //INFO: This could be used for scrolling through all the documents?
 export class ObsidianTouchBarScrubber extends ObsidianTouchBarItem {
-	constructor(properties: TouchBarScrubberProperties) {
-		super(properties);
+	constructor(properties: TouchBarScrubberProperties, id: string = "") {
+		super(properties, id);
 		this.type = TouchBarItemType.ObsidianTouchBarScrubber;
 	}
 

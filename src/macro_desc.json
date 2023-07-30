@@ -1,6 +1,6 @@
 {
 	"macros": [
-		{
+{
 			"syntax": "[KEYCODE]",
 			"description": "This is how you press a key, where `KEYCODE` is the name of the key you want pressed. Keycodes can be found <a >here</a>.",
 			"example": "[Enter] [Backspace]"
